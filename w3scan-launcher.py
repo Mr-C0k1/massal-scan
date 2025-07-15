@@ -20,19 +20,32 @@ except ImportError:
 
 # ==== Fallback CLI Mode untuk otomatisasi recon dan bypass param ====
 def run_cli(domain, wordlist=None, output=None):
-    print(f"[+] Menjalankan w3scan_subdomain.py untuk {domain}")
-    cmd = ["python3", "w3scan_subdomain.py", "--domain", domain]
-    if wordlist:
-        cmd += ["--wordlist", wordlist]
-    if output:
-        cmd += ["--output", output]
-    subprocess.run(cmd)
+    subdomain_script = "w3scan_subdomain.py"
+    recon_url_script = "modules/recon_url.py"
+    param_bypass_script = "modules/param_bypass.py"
 
-    print(f"\n[+] Menjalankan recon_url.py untuk {domain}")
-    subprocess.run(["python3", "modules/recon_url.py", "--domain", domain])
+    if os.path.isfile(subdomain_script):
+        print(f"[+] Menjalankan {subdomain_script} untuk {domain}")
+        cmd = ["python3", subdomain_script, "--domain", domain]
+        if wordlist:
+            cmd += ["--wordlist", wordlist]
+        if output:
+            cmd += ["--output", output]
+        subprocess.run(cmd)
+    else:
+        print(f"[!] File {subdomain_script} tidak ditemukan, melewati...")
 
-    print(f"\n[+] Menjalankan param_bypass.py untuk {domain}")
-    subprocess.run(["python3", "modules/param_bypass.py", "--domain", domain])
+    if os.path.isfile(recon_url_script):
+        print(f"\n[+] Menjalankan {recon_url_script} untuk {domain}")
+        subprocess.run(["python3", recon_url_script, "--domain", domain])
+    else:
+        print(f"[!] File {recon_url_script} tidak ditemukan, melewati...")
+
+    if os.path.isfile(param_bypass_script):
+        print(f"\n[+] Menjalankan {param_bypass_script} untuk {domain}")
+        subprocess.run(["python3", param_bypass_script, "--domain", domain])
+    else:
+        print(f"[!] File {param_bypass_script} tidak ditemukan, melewati...")
 
 # ==== GUI MODE ==== 
 if GUI_AVAILABLE:
@@ -87,17 +100,30 @@ if GUI_AVAILABLE:
                 self.result_text.insert(tk.END, "[!] Harap isi domain target.\n")
                 return
 
-            cmd = ["python3", "w3scan_subdomain.py", "--domain", domain]
-            if wordlist:
-                cmd += ["--wordlist", wordlist]
-            if output:
-                cmd += ["--output", output]
+            subdomain_script = "w3scan_subdomain.py"
+            recon_url_script = "modules/recon_url.py"
+            param_bypass_script = "modules/param_bypass.py"
 
-            self.result_text.insert(tk.END, f"[+] Subdomain: {' '.join(cmd)}\n")
-            threading.Thread(target=self.execute_command, args=(cmd,), daemon=True).start()
+            if os.path.isfile(subdomain_script):
+                cmd = ["python3", subdomain_script, "--domain", domain]
+                if wordlist:
+                    cmd += ["--wordlist", wordlist]
+                if output:
+                    cmd += ["--output", output]
+                self.result_text.insert(tk.END, f"[+] Menjalankan: {' '.join(cmd)}\n")
+                threading.Thread(target=self.execute_command, args=(cmd,), daemon=True).start()
+            else:
+                self.result_text.insert(tk.END, f"[!] File {subdomain_script} tidak ditemukan, melewati...\n")
 
-            threading.Thread(target=self.execute_command, args=(["python3", "modules/recon_url.py", "--domain", domain],), daemon=True).start()
-            threading.Thread(target=self.execute_command, args=(["python3", "modules/param_bypass.py", "--domain", domain],), daemon=True).start()
+            if os.path.isfile(recon_url_script):
+                threading.Thread(target=self.execute_command, args=(["python3", recon_url_script, "--domain", domain],), daemon=True).start()
+            else:
+                self.result_text.insert(tk.END, f"[!] File {recon_url_script} tidak ditemukan, melewati...\n")
+
+            if os.path.isfile(param_bypass_script):
+                threading.Thread(target=self.execute_command, args=(["python3", param_bypass_script, "--domain", domain],), daemon=True).start()
+            else:
+                self.result_text.insert(tk.END, f"[!] File {param_bypass_script} tidak ditemukan, melewati...\n")
 
         def execute_command(self, cmd):
             process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
