@@ -1,7 +1,99 @@
+# 🛡️ W3Scan - Web3 Vulnerability Scanner & Automation Framework
+
+W3Scan adalah framework pemindaian keamanan Web3 dan Web yang dirancang untuk:
+
+* Memindai **subdomain**, **recon URL**, dan **parameter bypass**
+* Mendukung mode **GUI**, **CLI**, dan **otomatisasi penuh (cron)**
+* Cocok untuk bug bounty hunter, pentester, dan devops security
+
+---
+
+## 🚀 Fitur Utama
+
+* 🔍 **Subdomain Scanner**
+  Deteksi subdomain aktif, IP, dan potensi **dangling CNAME takeover**
+* 🌐 **Recon URL**
+  Pemindaian path endpoint dari domain utama dan subdomain untuk identifikasi direktori rentan
+* 🔓 **Parameter Bypass Test**
+  Uji payload untuk parameter rentan terhadap WAF bypass, redirect, atau injection
+* 🖥️ **Antarmuka GUI (tkinter)**
+  User-friendly untuk menjalankan scanner tanpa command line
+* 🔁 **Mode Otomatisasi Cron**
+  Jalankan pemindaian terjadwal tanpa interaksi pengguna
+* 💻 **Hybrid CLI + GUI Launcher**
+  Jalankan dengan:
+  ```bash
+  python3 w3scan_launcher.py --d example.com
+  ```
+  atau langsung GUI:
+  ```bash
+  python3 w3scan_launcher.py
+  ```
+## 📂 Struktur Direktori
+
+```
+w3scan/
+├── w3scan_launcher.py
+├── w3scan_subdomain.py
+├── modules/
+│   ├── recon_url.py
+│   └── param_bypass.py
+├── w3scan_gui_launcher.py
+├── w3scan-autoscanner.sh
+├── targets.txt
+├── subdomain-wordlist.txt
+├── reports/
+├── logs/
+└── README.md
+```
+## ⚙️ Setup & Instalasi
+
+### 1. Pastikan Dependensi
+
+```bash
+git clone https://github.com/Mr-C0k1/massal-scan
+sudo apt install python3 python3-tk
+pip3 install requests --break-system-pakages (jika pip anda bermasalah di kali linux atau ubuntu) 
+### 2. Izin Eksekusi
+chmod +x w3scan-autoscanner.sh
+### 3. Jalankan GUI / CLI
+python3 w3scan_launcher.py --d example.com
+# atau buka GUI jika tersedia tkinter
+python3 w3scan_launcher.py
+### 4. Jalankan Otomatisasi Cron
+crontab -e
+# Tambahkan baris ini:
+0 3 * * * /path/to/w3scan-autoscanner.sh >> /var/log/w3scan.log 2>&1
+## 📝 Format Input
+
+* **targets.txt** (1 domain per baris)
+example.com
+app.target.io
+api.example.net
+* **subdomain-wordlist.txt** (untuk bruteforce subdomain)
+## 📤 Output Format
+* JSON hasil per domain di `/reports/scan_example.com.json`
+* Log detail setiap scan di `/logs/scan.log`
+## 📣 Rencana Pengembangan Selanjutnya
+
+* [ ] Integrasi notifikasi Telegram/Discord
+* [ ] Export PDF/Laporan HTML otomatis
+* [ ] API server / REST endpoint scanner
+## 👨‍💻 Developer
+
+Dikembangkan oleh AWARE independen keamanan siber untuk penggunaan audit Web3 & Web Security.
+
 📦 Struktur Output:
 Hasil JSON: /opt/w3scan/reports/scan_example.com.json
 Log Umum: /opt/w3scan/logs/scan.log
 Anda tinggal menjalankan:
 bash /opt/w3scan/w3scan-autoscanner.sh
 
+⚠️ PERINGATAN HUKUM & ETIKA:
 
+Alat ini dibuat untuk tujuan pendidikan dan pengujian keamanan legal. Penggunaan W3Scan terhadap sistem tanpa izin eksplisit dari pemiliknya adalah melanggar hukum di banyak yurisdiksi dan dapat menyebabkan tuntutan pidana atau sanksi hukum. Pengembang tidak bertanggung jawab atas penyalahgunaan alat ini.
+
+Gunakan hanya untuk:
+Audit internal organisasi
+Program bug bounty resmi
+Sistem milik pribadi yang sah
