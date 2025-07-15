@@ -53,7 +53,7 @@ w3scan/
 ```bash
 git clone https://github.com/Mr-C0k1/massal-scan
 sudo apt install python3 python3-tk
-pip3 install requests --break-system-pakages (jika pip anda bermasalah di kali linux atau ubuntu) 
+pip3 install requirements.txt --break-system-pakages (jika pip anda bermasalah di kali linux atau ubuntu) 
 ### 2. Izin Eksekusi
 chmod +x w3scan-autoscanner.sh
 ### 3. Jalankan GUI / CLI
