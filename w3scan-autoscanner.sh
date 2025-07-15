@@ -1,51 +1,42 @@
 #!/bin/bash
-# w3scan-autoscanner.sh
+# simple-domain-scanner.sh
+# Pengganti sementara jika w3scan_launcher.py gagal
 
-# === Konfigurasi ===
-DOMAIN_LIST="/opt/w3scan/targets.txt"
-WORDLIST="/opt/w3scan/subdomain-wordlist.txt"
-OUTPUT_DIR="/opt/w3scan/reports"
-LOGFILE="/opt/w3scan/logs/scan.log"
-
-# === Pastikan direktori ada ===
-mkdir -p "$OUTPUT_DIR"
-mkdir -p "$(dirname "$LOGFILE")"
-
-# === Gunakan argumen jika diberikan ===
-if [[ $# -gt 0 ]]; then
-  echo "[*] Menggunakan domain dari argumen..."
-  DOMAIN_SOURCE="/tmp/domain_args_$$.txt"
-  for domain in "$@"; do
-    echo "$domain" >> "$DOMAIN_SOURCE"
-  done
-else
-  DOMAIN_SOURCE="$DOMAIN_LIST"
-fi
-
-# === Cek file domain source ada ===
-if [[ ! -f "$DOMAIN_SOURCE" ]]; then
-  echo "[!] File domain tidak ditemukan: $DOMAIN_SOURCE"
+domain="$1"
+if [[ -z "$domain" ]]; then
+  echo "Gunakan: $0 domain.com"
   exit 1
 fi
 
-# === Loop setiap domain ===
-while read -r domain; do
-  domain=$(echo "$domain" | xargs)  # Trim spasi
-  if [[ -z "$domain" ]]; then continue; fi
+echo "[+] Memindai domain: $domain"
 
-  echo "[+] Memindai: $domain" | tee -a "$LOGFILE"
-  python3 /opt/w3scan/w3scan_launcher.py --d "$domain" \
-    --wordlist "$WORDLIST" \
-    --output "$OUTPUT_DIR/scan_${domain}.json" \
-    >> "$LOGFILE" 2>&1
+# Alamat IP
+ip=$(dig +short "$domain" | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | head -n 1)
+if [[ -z "$ip" ]]; then
+  echo "[!] Tidak bisa resolve IP"
+  exit 1
+fi
+echo "    ↪ Alamat IP: $ip"
 
-  if [[ $? -ne 0 ]]; then
-    echo "[!] ERROR saat memindai: $domain" | tee -a "$LOGFILE"
-  fi
+# Port Terbuka (21, 22, 80, 443, 3306)
+echo "    ↪ Memindai port..."
+open_ports=$(nmap -p 21,22,80,443,3306 "$domain" | grep "open" | awk '{print $1}')
+echo "    ↪ Port terbuka: $open_ports"
 
-  echo "[-] Selesai: $domain" | tee -a "$LOGFILE"
-  echo "" | tee -a "$LOGFILE"
-done < "$DOMAIN_SOURCE"
+# Cek apakah ada Gmail di MX
+echo "    ↪ Mengecek MX record..."
+mx=$(dig MX "$domain" +short | grep "google.com")
+if [[ -n "$mx" ]]; then
+  echo "    ↪ Domain menggunakan Gmail (Google Mail)"
+else
+  echo "    ↪ Domain tidak menggunakan Gmail"
+fi
 
-# Hapus file sementara jika pakai argumen
-[[ -f "$DOMAIN_SOURCE" && "$DOMAIN_SOURCE" == /tmp/domain_args_* ]] && rm "$DOMAIN_SOURCE"
+# Cek keamanan HTTPS
+echo "    ↪ Mengecek HTTPS..."
+http_status=$(curl -s -o /dev/null -w "%{http_code}" "https://$domain")
+if [[ "$http_status" -lt 400 ]]; then
+  echo "    ↪ Website menggunakan HTTPS dan respons normal ($http_status)"
+else
+  echo "    ↪ Website mungkin tidak aman atau tidak merespon HTTPS (Status $http_status)"
+fi
