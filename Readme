@@ -60,6 +60,7 @@ chmod +x w3scan-autoscanner.sh
 python3 w3scan_launcher.py --d example.com
 # atau buka GUI jika tersedia tkinter
 python3 w3scan_launcher.py
+
 ### 4. Jalankan Otomatisasi Cron
 crontab -e
 # Tambahkan baris ini:
