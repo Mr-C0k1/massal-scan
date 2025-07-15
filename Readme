@@ -1,1 +1,7 @@
+📦 Struktur Output:
+Hasil JSON: /opt/w3scan/reports/scan_example.com.json
+Log Umum: /opt/w3scan/logs/scan.log
+Anda tinggal menjalankan:
+bash /opt/w3scan/w3scan-autoscanner.sh
+
 
