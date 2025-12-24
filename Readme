@@ -1,100 +1,109 @@
-# 🛡️ W3Scan - Web3 Vulnerability Scanner & Automation Framework
+# W3Scan - Advanced Reconnaissance Toolkit
 
-W3Scan adalah framework pemindaian keamanan Web3 dan Web yang dirancang untuk:
+[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Issues](https://img.shields.io/badge/issues-report-red)](https://github.com/yourusername/w3scan/issues)
 
-* Memindai **subdomain**, **recon URL**, dan **parameter bypass**
-* Mendukung mode **GUI**, **CLI**, dan **otomatisasi penuh (cron)**
-* Cocok untuk bug bounty hunter, pentester, dan devops security
+**W3Scan** adalah toolkit reconnaissance all-in-one yang dirancang untuk bug bounty hunter, penetration tester, dan security researcher. Tool ini menggabungkan subdomain enumeration, port scanning, directory bruteforce, WAF detection, subdomain takeover check, dan masih banyak lagi — dalam satu paket yang mudah digunakan.
 
----
+## Fitur Utama
 
-## 🚀 Fitur Utama
+- **Subdomain Enumeration** cepat dengan brute-force + live check (title, status code, tech stack)
+- **Port Scanning** akurat menggunakan `nmap` (top 1000 ports + service detection)
+- **Directory & File Bruteforce** berkecepatan tinggi dengan `ffuf`
+- **Subdomain Takeover Detection** (deteksi CNAME dangling)
+- **WAF Detection** akurat dengan `wafw00f`
+- **HTTPS/TLS Certificate Info**
+- **Antarmuka GUI Modern** (Tkinter) dengan progress bar, stop button, dan real-time log
+- **Fallback CLI** jika GUI tidak tersedia
+- **Output JSON** terstruktur dan mudah dibaca
+- **Multi-threading** untuk performa maksimal
 
-* 🔍 **Subdomain Scanner**
-  Deteksi subdomain aktif, IP, dan potensi **dangling CNAME takeover**
-* 🌐 **Recon URL**
-  Pemindaian path endpoint dari domain utama dan subdomain untuk identifikasi direktori rentan
-* 🔓 **Parameter Bypass Test**
-  Uji payload untuk parameter rentan terhadap WAF bypass, redirect, atau injection
-* 🖥️ **Antarmuka GUI (tkinter)**
-  User-friendly untuk menjalankan scanner tanpa command line
-* 🔁 **Mode Otomatisasi Cron**
-  Jalankan pemindaian terjadwal tanpa interaksi pengguna
-* 💻 **Hybrid CLI + GUI Launcher**
-  Jalankan dengan:
-  ```bash
-  python3 w3scan_launcher.py --d example.com
-  ```
-  atau langsung GUI:
-  ```bash
-  python3 w3scan_launcher.py
-  ```
-## 📂 Struktur Direktori
-
-```
+## Struktur Project
 w3scan/
-├── w3scan_launcher.py
-├── w3scan_subdomain.py
-├── modules/
-│   ├── recon_url.py
-│   └── param_bypass.py
-├── w3scan_gui_launcher.py
-├── w3scan-autoscanner.sh
-├── targets.txt
-├── subdomain-wordlist.txt
-├── reports/
-├── logs/
+├── w3scan_gui.py              # Antarmuka GUI utama (modern & user-friendly)
+├── w3scan_advanced.py         # Core engine reconnaissance (versi powerful)
+├── simple-domain-scanner.sh   # Script bash sederhana untuk quick scan
+├── upgraded-domain-scanner.sh # Versi upgrade dari script bash
+├── wordlists/                 # (Opsional) Tempat wordlist default
+│   ├── subdomains.txt
+│   └── directories.txt
+├── results/                   # Folder hasil scan otomatis
 └── README.md
-```
-## ⚙️ Setup & Instalasi
+text## Instalasi & Dependencies
 
-### 1. Pastikan Dependensi
+### 1. Install Dependencies (wajib untuk performa terbaik)
 
 ```bash
-git clone https://github.com/Mr-C0k1/massal-scan
-sudo apt install python3 python3-tk
-pip3 install requirements.txt --break-system-pakages (jika pip anda bermasalah di kali linux atau ubuntu) 
-### 2. Izin Eksekusi
-chmod +x w3scan-autoscanner.sh
-### 3. Jalankan GUI / CLI
-python3 w3scan_launcher.py --d example.com
-# atau buka GUI jika tersedia tkinter
-python3 w3scan_launcher.py
+# Go-based tools (super cepat & akurat)
+go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest
+go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
+go install -v github.com/ffuf/ffuf/v2@latest
 
-### 4. Jalankan Otomatisasi Cron
-crontab -e
-# Tambahkan baris ini:
-0 3 * * * /path/to/w3scan-autoscanner.sh >> /var/log/w3scan.log 2>&1
-## 📝 Format Input
+# System tools
+sudo apt update && sudo apt install nmap wafw00f -y    # Ubuntu/Debian
+# brew install nmap wafw00f                            # macOS
+# pacman -S nmap wafw00f                               # Arch Linux
+Catatan: Pastikan $GOPATH/bin atau $HOME/go/bin ada di $PATH Anda.
+2. Jalankan Tool
+Menggunakan GUI (rekomendasi untuk pemula)
+Bashpython3 w3scan_gui.py
+Fitur GUI:
 
-* **targets.txt** (1 domain per baris)
-example.com
-app.target.io
-api.example.net
-* **subdomain-wordlist.txt** (untuk bruteforce subdomain)
-## 📤 Output Format
-* JSON hasil per domain di `/reports/scan_example.com.json`
-* Log detail setiap scan di `/logs/scan.log`
-## 📣 Rencana Pengembangan Selanjutnya
+Input domain & wordlist mudah
+Progress bar real-time
+Tombol Stop Scan
+Output JSON otomatis
+Log berwarna dengan timestamp
 
-* [ ] Integrasi notifikasi Telegram/Discord
-* [ ] Export PDF/Laporan HTML otomatis
-* [ ] API server / REST endpoint scanner
-## 👨‍💻 Developer
+Menggunakan CLI (versi powerful)
+Bashpython3 w3scan_advanced.py --domain example.com --wordlist wordlists/subdomains.txt
+Contoh lengkap:
+Bashpython3 w3scan_advanced.py \
+  --domain target.com \
+  --wordlist wordlists/subdomains.txt \
+  --output results/target_com_20251224.json
+Quick Scan dengan Bash (tanpa Python)
+Bashchmod +x upgraded-domain-scanner.sh
+./upgraded-domain-scanner.sh example.com
+Contoh Output
+Hasil disimpan dalam format JSON yang rapi:
+JSON{
+  "target": "example.com",
+  "timestamp": "2025-12-24 15:30:45",
+  "ip": "93.184.216.34",
+  "live_subdomains": [
+    {
+      "host": "www.example.com",
+      "url": "https://www.example.com",
+      "status": 200,
+      "title": "Example Domain",
+      "tech": ["Apache", "Ubuntu"]
+    }
+  ],
+  "open_ports": [
+    {"port": 80, "service": "http"},
+    {"port": 443, "service": "https"}
+  ],
+  "takeover_vulnerable": [],
+  "directories": [
+    {"url": "https://example.com/admin/", "status": 403, "size": 277}
+  ],
+  "waf": "Cloudflare"
+}
+Wordlist Rekomendasi
 
-Dikembangkan oleh AWARE independen keamanan siber untuk penggunaan audit Web3 & Web Security.
+Subdomain: https://github.com/danielmiessler/SecLists/blob/master/Discovery/DNS/subdomains-top1million-5000.txt
+Directory: https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/raft-medium-directories.txt
 
-📦 Struktur Output:
-Hasil JSON: /opt/w3scan/reports/scan_example.com.json
-Log Umum: /opt/w3scan/logs/scan.log
-Anda tinggal menjalankan:
-bash /opt/w3scan/w3scan-autoscanner.sh
+Kontribusi
+Kontribusi sangat diterima! Silakan:
 
-⚠️ PERINGATAN HUKUM & ETIKA:
+Buka issue untuk laporan bug atau saran fitur
+Fork & buat Pull Request
 
-Alat ini dibuat untuk tujuan pendidikan dan pengujian keamanan legal. Penggunaan W3Scan terhadap sistem tanpa izin eksplisit dari pemiliknya adalah melanggar hukum di banyak yurisdiksi dan dapat menyebabkan tuntutan pidana atau sanksi hukum. Pengembang tidak bertanggung jawab atas penyalahgunaan alat ini.
+Lisensi
+Proyek ini dilisensikan di bawah MIT License.
 
-Gunakan hanya untuk:
-Audit internal organisasi
-Program bug bounty resmi
-Sistem milik pribadi yang sah
+W3Scan - Recon Faster, Hunt Smarter ⚡
+Dibuat dengan ❤️ oleh [https://github.com/Mr-C0k1]
